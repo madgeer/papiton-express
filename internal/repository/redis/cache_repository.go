@@ -1,7 +1,7 @@
 package redis
 
 type RedisRepo struct {
-	//todo menambahkan redis client
+	//akan menambahkan redis client
 }
 
 func (r *RedisRepo) GetPricingFromCache(key string) (float64, error) {

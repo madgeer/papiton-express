@@ -10,7 +10,7 @@ import (
 
 var DB *sql.DB
 
-// initDB untuk koneksi ke PostgreSQL
+// untuk koneksi ke database
 func InitDB() (*sql.DB, error) {
 	host := getEnv("DB_HOST", "localhost")
 	port := getEnv("DB_PORT", "5433")

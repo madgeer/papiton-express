@@ -13,7 +13,7 @@ import (
 /*
 functional test untuk order & tariff service
 menguji flow createorder
-Fail pada tahap ini karena logic belum selesai
+fail pada tahap ini karena logic belum selesai
 */
 
 func TestCreateOrderFlow_Functional(t *testing.T) {
@@ -63,7 +63,7 @@ func TestCreateOrderFlow_Functional(t *testing.T) {
 		HasPacking:   false,
 	}
 
-	//excure function
+	//excurte function
 	res, err := svc.CreateOrder(req)
 
 	//assertion

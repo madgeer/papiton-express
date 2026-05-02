@@ -22,5 +22,5 @@ func TestGenerateRESI(t *testing.T) {
 
 	// Ccekek apakah resi mengandung kode kota yang benar
 	assert.Contains(t, resi, "BDG")
-	assert.NotEmpty(t, resi) // Contoh panjang resi (3 kota + 12 timestamp + 3 random)
+	assert.NotEmpty(t, resi)
 }
