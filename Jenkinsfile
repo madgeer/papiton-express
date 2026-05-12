@@ -16,32 +16,34 @@ pipeline {
 
         stage('2. Unit Tests'){
             steps {
+               
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'go test ./internal/...'
+                    bat 'go test ./internal/...'
                 }
             }
         }
 
         stage('3. Lint/Vet'){
             steps {
-                sh 'go vet ./...'
+                bat 'go vet ./...'
             }
         }
 
         stage('4. Build Docker Image'){
             steps {
-
-                sh "docker build -t ${IMAGE_NAME}:latest ."
+               
+                bat "docker build -t %IMAGE_NAME%:latest ."
             }
         }
 
         stage('5. Functional Test'){
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'docker-compose up -d postgres redis'
-                    sh 'sleep 10'
-                    sh 'go test ./test/...'
-                    sh 'docker-compose down'
+                    bat 'docker-compose up -d postgres redis'
+        
+                    bat 'timeout /t 10 /nobreak'
+                    bat 'go test ./test/...'
+                    bat 'docker-compose down'
                 }
             }
         }
@@ -49,9 +51,10 @@ pipeline {
         stage('6. Push image'){
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', passwordVariable :'PASS', usernameVariable: 'USER')]){
-                    sh "echo ${PASS} | docker login -u ${USER} --password-stdin"
-                    sh "docker tag ${IMAGE_NAME}:latest ${USER}/${IMAGE_NAME}:latest"
-                    sh "docker push ${USER}/${IMAGE_NAME}:latest"
+                    
+                    bat "echo %PASS% | docker login -u %USER% --password-stdin"
+                    bat "docker tag %IMAGE_NAME%:latest %USER%/%IMAGE_NAME%:latest"
+                    bat "docker push %USER%/%IMAGE_NAME%:latest"
                 }
             }
         }
@@ -60,8 +63,7 @@ pipeline {
             steps {
                 echo 'Deploying image ke cluster Kubernetes lokal (Docker Desktop)...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-    
-                    sh "kubectl apply -f deployment.yaml"
+                    bat "kubectl apply -f deployment.yaml"
                 }
             }
         }
@@ -70,8 +72,8 @@ pipeline {
             steps {
                 echo 'Verifikasi status deployment...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh "kubectl get pods"
-                    sh "kubectl rollout status deployment/order-tariff-deployment"
+                    bat "kubectl get pods"
+                    bat "kubectl rollout status deployment/order-tariff-deployment"
                 }
             }
         }
