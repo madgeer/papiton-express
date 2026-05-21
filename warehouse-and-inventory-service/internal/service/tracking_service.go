@@ -10,12 +10,12 @@ func NewTrackingService() *TrackingService {
 
 /* NotifyTrackingService memberi tahu Tracking Service bahwa status berubah */
 func (s *TrackingService) NotifyTrackingService(resi string, status string) error {
-	// FIXME: Dikosongkan agar test FAILED, akan dikerjakan pada tahap berikutnya.
-	return nil
+	// Dikosongkan karena belum diimplementasikan, mengembalikan ErrNotImplemented
+	return ErrNotImplemented
 }
 
 /* FormatManifestData merangkum data manifest untuk dikirim ke sistem eksternal */
 func (s *TrackingService) FormatManifestData(manifestID string) (string, error) {
-	// FIXME: Dikosongkan agar test FAILED, akan dikerjakan pada tahap berikutnya.
-	return "", nil
+	// Dikosongkan karena belum diimplementasikan, mengembalikan ErrNotImplemented
+	return "", ErrNotImplemented
 }

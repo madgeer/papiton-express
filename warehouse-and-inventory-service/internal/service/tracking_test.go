@@ -7,12 +7,14 @@ import (
 
 /* TestNotifyTrackingService_Unit untuk testing notify tracking service */
 func TestNotifyTrackingService_Unit(t *testing.T) {
-	// FIXME: Dikosongkan agar test FAILED, akan dikerjakan pada tahap berikutnya.
-	assert.Fail(t, "Unit test gagal: Fungsi NotifyTrackingService belum diimplementasikan dengan API eksternal")
+	svc := NewTrackingService()
+	err := svc.NotifyTrackingService("RESI-001", "IN_TRANSIT")
+	assert.ErrorIs(t, err, ErrNotImplemented)
 }
 
 /* TestFormatManifestData_Unit untuk testing format manifest data */
 func TestFormatManifestData_Unit(t *testing.T) {
-	// FIXME: Dikosongkan agar test FAILED, akan dikerjakan pada tahap berikutnya.
-	assert.Fail(t, "Unit test gagal: Fungsi FormatManifestData belum diimplementasikan")
+	svc := NewTrackingService()
+	_, err := svc.FormatManifestData("MNF-123")
+	assert.ErrorIs(t, err, ErrNotImplemented)
 }

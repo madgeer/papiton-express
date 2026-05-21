@@ -90,6 +90,58 @@ services:
     networks:
       - papiton-net
 
+  # --- ORDER & TARIFF SERVICE ---
+  order-app:
+    build:
+      context: ./order-tariff-service
+      dockerfile: dockerfile
+    container_name: order-app
+    ports:
+      - "8082:8080" # Diakses via port 8082 di localhost
+    environment:
+      - DB_HOST=order-db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - DB_NAME=papiton_order_tariff_service_db
+      - DB_PORT=5432
+      - REDIS_HOST=order-redis
+      - REDIS_PORT=6379
+    depends_on:
+      order-db:
+        condition: service_healthy
+      order-redis:
+        condition: service_started
+    networks:
+      - papiton-net
+
+  # --- ORDER & TARIFF DB & REDIS ---
+  order-db:
+    image: postgres:15-alpine
+    container_name: order-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: papiton_order_tariff_service_db
+    ports:
+      - "5434:5432" # Diakses via port 5434 di localhost untuk menghindari konflik
+    volumes:
+      - order_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d papiton_order_tariff_service_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - papiton-net
+
+  order-redis:
+    image: redis:alpine
+    container_name: order-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - papiton-net
+
 networks:
   papiton-net:
     driver: bridge
@@ -97,3 +149,4 @@ networks:
 volumes:
   warehouse_pgdata:
   shipping_pgdata:
+  order_pgdata:

@@ -10,6 +10,6 @@ func NewStatusService() *StatusService {
 
 /* UpdatePackageStatus mengupdate status tunggal ke DB */
 func (s *StatusService) UpdatePackageStatus(resi string, status string) error {
-	// FIXME: Dikosongkan agar test FAILED, akan dikerjakan pada tahap berikutnya.
-	return nil
+	// Dikosongkan karena belum diimplementasikan, mengembalikan ErrNotImplemented
+	return ErrNotImplemented
 }
