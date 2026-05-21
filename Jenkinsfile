@@ -48,7 +48,7 @@ pipeline {
         stage('Unit Tests') {
             agent {
                 docker {
-                    image 'golang:1.25-alpine'
+                    image 'golang:1.26-alpine'
                     reuseNode true
                 }
             }
@@ -68,7 +68,7 @@ pipeline {
         stage('Lint/Vet') {
             agent {
                 docker {
-                    image 'golang:1.25-alpine'
+                    image 'golang:1.26-alpine'
                     reuseNode true
                 }
             }
@@ -103,7 +103,11 @@ pipeline {
             steps {
                 script {
                     echo 'Starting database containers for functional tests...'
-                    sh 'docker compose up -d order-db order-redis shipping-db shipping-mongo warehouse-db || docker-compose up -d order-db order-redis shipping-db shipping-mongo warehouse-db'
+                    sh 'docker rm -f shipping-db shipping-mongo order-db order-redis || true'
+                    sh 'docker run -d --name shipping-db -p 5433:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=shipping_test_db postgres:15-alpine'
+                    sh 'docker run -d --name shipping-mongo -p 27017:27017 mongo:6-jammy'
+                    sh 'docker run -d --name order-db -p 5434:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin123 -e POSTGRES_DB=papiton_order_tariff_service_db postgres:15-alpine'
+                    sh 'docker run -d --name order-redis -p 6379:6379 redis:alpine'
                     echo 'Waiting for databases to be ready...'
                     sh 'sleep 10'
                 }
@@ -113,7 +117,7 @@ pipeline {
         stage('Functional Tests') {
             agent {
                 docker {
-                    image 'golang:1.25-alpine'
+                    image 'golang:1.26-alpine'
                     args '--network host -v /var/run/docker.sock:/var/run/docker.sock'
                     reuseNode true
                 }
@@ -172,7 +176,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up database containers...'
-            sh 'docker compose down || docker-compose down || true'
+            sh 'docker rm -f shipping-db shipping-mongo order-db order-redis || true'
             echo 'Pipeline execution completed.'
         }
         failure {
