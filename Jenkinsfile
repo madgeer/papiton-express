@@ -46,6 +46,12 @@ pipeline {
         }
 
         stage('Unit Tests') {
+            agent {
+                docker {
+                    image 'golang:1.25-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 script {
                     def services = getServices()
@@ -60,6 +66,12 @@ pipeline {
         }
 
         stage('Lint/Vet') {
+            agent {
+                docker {
+                    image 'golang:1.25-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 script {
                     def services = getServices()
@@ -91,7 +103,7 @@ pipeline {
             steps {
                 script {
                     echo 'Starting database containers for functional tests...'
-                    sh 'docker compose up -d order-db order-redis shipping-db shipping-mongo warehouse-db'
+                    sh 'docker compose up -d order-db order-redis shipping-db shipping-mongo warehouse-db || docker-compose up -d order-db order-redis shipping-db shipping-mongo warehouse-db'
                     echo 'Waiting for databases to be ready...'
                     sh 'sleep 10'
                 }
@@ -99,6 +111,13 @@ pipeline {
         }
 
         stage('Functional Tests') {
+            agent {
+                docker {
+                    image 'golang:1.25-alpine'
+                    args '--network host -v /var/run/docker.sock:/var/run/docker.sock'
+                    reuseNode true
+                }
+            }
             steps {
                 script {
                     def services = getServices()
@@ -153,7 +172,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up database containers...'
-            sh 'docker compose down || true'
+            sh 'docker compose down || docker-compose down || true'
             echo 'Pipeline execution completed.'
         }
         failure {
