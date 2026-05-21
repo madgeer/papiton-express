@@ -13,7 +13,7 @@ var DB *sql.DB
 // untuk koneksi ke database
 func InitDB() (*sql.DB, error) {
 	host := getEnv("DB_HOST", "localhost")
-	port := getEnv("DB_PORT", "5433")
+	port := getEnv("DB_PORT", "5434")
 	user := getEnv("DB_USER", "postgres")
 	password := getEnv("DB_PASSWORD", "admin123")
 	dbname := getEnv("DB_NAME", "papiton_order_tariff_service_db")
