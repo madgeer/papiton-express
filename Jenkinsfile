@@ -55,15 +55,26 @@ pipeline {
             steps {
                 script {
                     def services = getServices()
+                    def failedServices = [] // Menampung service yang gagal
                     services.each { service ->
                         echo "Running unit tests for ${service.id}..."
-                        dir(service.path) {
-                            sh 'go test -short ./...'
+                        try {
+                            dir(service.path) {
+                                sh 'go test -short ./...'
+                            }
+                        } catch (Exception e) {
+                            echo "Unit tests failed for ${service.id}!"
+                            failedServices.add(service.id)
                         }
+                    }
+                    // Jika ada yang gagal, barulah gagalkan stage di akhir
+                    if (failedServices.size() > 0) {
+                        error "Unit tests failed for these services: ${failedServices}"
                     }
                 }
             }
         }
+
 
         stage('Lint/Vet') {
             agent {
