@@ -16,11 +16,12 @@ test-unit:
 
 ## Functional test (butuh Docker Compose berjalan)
 test-functional:
-	docker-compose -f docker-compose-test.yml up -d
+	docker-compose -f ../docker-compose.yml up -d zookeeper kafka notification-db
 	@echo "Menunggu Kafka siap..."
 	sleep 15
-	go test ./tests/functional/... -v -timeout 60s
-	docker-compose -f docker-compose-test.yml down
+	KAFKA_BROKER=localhost:9092 go test ./tests/functional/... -v -timeout 60s
+	docker-compose -f ../docker-compose.yml stop zookeeper kafka notification-db
+	docker-compose -f ../docker-compose.yml rm -f zookeeper kafka notification-db
 	@echo "✅ Functional test selesai!"
 
 ## Jalankan semua test
