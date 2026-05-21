@@ -7,8 +7,9 @@ import (
 	"context"
 	"reflect"
 
-	"go.uber.org/mock/gomock"
 	"papiton/notification-service/internal/model"
+
+	"github.com/golang/mock/gomock"
 )
 
 // ─── MockNotificationProvider ─────────────────────────────────────────────────

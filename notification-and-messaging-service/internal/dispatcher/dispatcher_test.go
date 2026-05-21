@@ -5,10 +5,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"papiton/notification-service/internal/dispatcher"
 	"papiton/notification-service/internal/model"
 	"papiton/notification-service/mocks"
+
+	"github.com/golang/mock/gomock"
 )
 
 func TestDispatcher_Dispatch_Email_Success(t *testing.T) {
