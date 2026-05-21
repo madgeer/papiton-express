@@ -30,32 +30,26 @@ def getServices() {
     ]
 }
 
-pipeline {
-    agent any
+node {
+    def registry = "madgeer" // Ganti dengan URL registry Docker Anda
+    def gitBranch = 'fix/jenkins-pipeline' // Ganti dengan branch target Anda jika berbeda
+    def gitUrl = 'https://github.com/madgeer/papiton-express.git'
 
-    environment {
-        REGISTRY = "<registry>" // Ganti dengan URL registry Docker Anda
-    }
+    // Menyimpan status kegagalan untuk setiap tahapan verifikasi
+    def stageFailures = [:]
 
-    stages {
+    try {
         stage('Checkout') {
-            steps {
-                echo 'Checking out repository...'
-                checkout scm
-            }
+            echo "Checking out repository from branch ${gitBranch}..."
+            git url: gitUrl, branch: gitBranch
         }
 
-        stage('Unit Tests') {
-            agent {
-                docker {
-                    image 'golang:1.26-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                script {
+        // --- STAGE: UNIT TESTS ---
+        try {
+            stage('Unit Tests') {
+                docker.image('golang:1.26-alpine').inside {
                     def services = getServices()
-                    def failedServices = [] // Menampung service yang gagal
+                    def failedServices = []
                     services.each { service ->
                         echo "Running unit tests for ${service.id}..."
                         try {
@@ -67,134 +61,157 @@ pipeline {
                             failedServices.add(service.id)
                         }
                     }
-                    // Jika ada yang gagal, barulah gagalkan stage di akhir
                     if (failedServices.size() > 0) {
-                        error "Unit tests failed for these services: ${failedServices}"
+                        error "Unit tests failed for: ${failedServices}"
                     }
                 }
             }
+        } catch (Exception e) {
+            stageFailures['Unit Tests'] = e.message
+            currentBuild.result = 'UNSTABLE'
         }
 
-
-        stage('Lint/Vet') {
-            agent {
-                docker {
-                    image 'golang:1.26-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                script {
+        // --- STAGE: LINT/VET ---
+        try {
+            stage('Lint/Vet') {
+                docker.image('golang:1.26-alpine').inside {
                     def services = getServices()
+                    def failedServices = []
                     services.each { service ->
                         echo "Running go vet for ${service.id}..."
-                        dir(service.path) {
-                            sh 'go vet ./...'
+                        try {
+                            dir(service.path) {
+                                sh 'go vet ./...'
+                            }
+                        } catch (Exception e) {
+                            echo "Go vet failed for ${service.id}!"
+                            failedServices.add(service.id)
                         }
+                    }
+                    if (failedServices.size() > 0) {
+                        error "Go vet failed for: ${failedServices}"
                     }
                 }
             }
+        } catch (Exception e) {
+            stageFailures['Lint/Vet'] = e.message
+            currentBuild.result = 'UNSTABLE'
         }
 
-        stage('Build Image') {
-            steps {
-                script {
-                    def services = getServices()
-                    services.each { service ->
-                        echo "Building Docker image for ${service.id}..."
+        // --- STAGE: BUILD IMAGE ---
+        try {
+            stage('Build Image') {
+                def services = getServices()
+                def failedServices = []
+                services.each { service ->
+                    echo "Building Docker image for ${service.id}..."
+                    try {
                         dir(service.path) {
                             sh "docker build -f ${service.dockerfile} -t ${service.imageName}:${BUILD_NUMBER} ."
                         }
+                    } catch (Exception e) {
+                        echo "Docker build failed for ${service.id}!"
+                        failedServices.add(service.id)
                     }
                 }
-            }
-        }
-
-        stage('Start Databases') {
-            steps {
-                script {
-                    echo 'Starting database containers for functional tests...'
-                    sh 'docker rm -f shipping-db shipping-mongo order-db order-redis || true'
-                    sh 'docker run -d --name shipping-db -p 5433:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=shipping_test_db postgres:15-alpine'
-                    sh 'docker run -d --name shipping-mongo -p 27017:27017 mongo:6-jammy'
-                    sh 'docker run -d --name order-db -p 5434:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin123 -e POSTGRES_DB=papiton_order_tariff_service_db postgres:15-alpine'
-                    sh 'docker run -d --name order-redis -p 6379:6379 redis:alpine'
-                    echo 'Waiting for databases to be ready...'
-                    sh 'sleep 10'
+                if (failedServices.size() > 0) {
+                    error "Docker build failed for: ${failedServices}"
                 }
             }
+        } catch (Exception e) {
+            stageFailures['Build Image'] = e.message
+            currentBuild.result = 'UNSTABLE'
         }
 
-        stage('Functional Tests') {
-            agent {
-                docker {
-                    image 'golang:1.26-alpine'
-                    args '--network host -v /var/run/docker.sock:/var/run/docker.sock'
-                    reuseNode true
-                }
+        // --- STAGE: START DATABASES (Untuk Functional Tests) ---
+        try {
+            stage('Start Databases') {
+                echo 'Starting database containers for functional tests...'
+                sh 'docker rm -f shipping-db shipping-mongo order-db order-redis || true'
+                sh 'docker run -d --name shipping-db -p 5433:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=shipping_test_db postgres:15-alpine'
+                sh 'docker run -d --name shipping-mongo -p 27017:27017 mongo:6-jammy'
+                sh 'docker run -d --name order-db -p 5434:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin123 -e POSTGRES_DB=papiton_order_tariff_service_db postgres:15-alpine'
+                sh 'docker run -d --name order-redis -p 6379:6379 redis:alpine'
+                echo 'Waiting for databases to be ready...'
+                sh 'sleep 10'
             }
-            steps {
-                script {
+        } catch (Exception e) {
+            stageFailures['Start Databases'] = e.message
+            currentBuild.result = 'UNSTABLE'
+        }
+
+        // --- STAGE: FUNCTIONAL TESTS ---
+        try {
+            stage('Functional Tests') {
+                docker.image('golang:1.26-alpine').inside('--network host -v /var/run/docker.sock:/var/run/docker.sock') {
                     def services = getServices()
+                    def failedServices = []
                     services.each { service ->
                         echo "Running functional tests for ${service.id}..."
-                        dir(service.path) {
-                            sh "go test -tags functional -v ${service.functionalTestPath}"
+                        try {
+                            dir(service.path) {
+                                sh "go test -tags functional -v ${service.functionalTestPath}"
+                            }
+                        } catch (Exception e) {
+                            echo "Functional tests failed for ${service.id}!"
+                            failedServices.add(service.id)
                         }
                     }
-                }
-            }
-        }
-
-        stage('Push Image') {
-            steps {
-                script {
-                    def services = getServices()
-                    services.each { service ->
-                        echo "Pushing image for ${service.id} to registry..."
-                        sh "docker tag ${service.imageName}:${BUILD_NUMBER} ${REGISTRY}/${service.imageName}:${BUILD_NUMBER}"
-                        sh "docker push ${REGISTRY}/${service.imageName}:${BUILD_NUMBER}"
+                    if (failedServices.size() > 0) {
+                        error "Functional tests failed for: ${failedServices}"
                     }
                 }
             }
+        } catch (Exception e) {
+            stageFailures['Functional Tests'] = e.message
+            currentBuild.result = 'UNSTABLE'
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    def services = getServices()
-                    services.each { service ->
-                        echo "Deploying ${service.id} to Kubernetes..."
-                        sh "kubectl set image deployment/${service.deployment} ${service.container}=${REGISTRY}/${service.imageName}:${BUILD_NUMBER} -n production"
-                    }
+        // --- CD STAGES: HANYA BERJALAN JIKA SELURUH VERIFIKASI BERHASIL ---
+        if (stageFailures.size() == 0) {
+            stage('Push Image') {
+                def services = getServices()
+                services.each { service ->
+                    echo "Pushing image for ${service.id} to registry..."
+                    sh "docker tag ${service.imageName}:${BUILD_NUMBER} ${registry}/${service.imageName}:${BUILD_NUMBER}"
+                    sh "docker push ${registry}/${service.imageName}:${BUILD_NUMBER}"
                 }
             }
-        }
 
-        stage('Verify') {
-            steps {
-                script {
-                    def services = getServices()
-                    services.each { service ->
-                        echo "Verifying deployment for ${service.id}..."
-                        sh "kubectl rollout status deployment/${service.deployment} -n production"
-                    }
+            stage('Deploy to Kubernetes') {
+                def services = getServices()
+                services.each { service ->
+                    echo "Deploying ${service.id} to Kubernetes..."
+                    sh "kubectl set image deployment/${service.deployment} ${service.container}=${registry}/${service.imageName}:${BUILD_NUMBER} -n production"
                 }
             }
-        }
-    }
 
-    post {
-        always {
+            stage('Verify') {
+                def services = getServices()
+                services.each { service ->
+                    echo "Verifying deployment for ${service.id}..."
+                    sh "kubectl rollout status deployment/${service.deployment} -n production"
+                }
+            }
+
+            currentBuild.result = 'SUCCESS'
+            echo 'Pipeline completed successfully!'
+        } else {
+            // Tandai build sebagai gagal di akhir jika ada tahapan verifikasi yang gagal
+            currentBuild.result = 'FAILURE'
+            echo "Pipeline completed with failures in: ${stageFailures.keySet()}"
+            error "Pipeline failed due to stage failures: ${stageFailures}"
+        }
+
+    } catch (err) {
+        currentBuild.result = 'FAILURE'
+        echo "Pipeline aborted due to critical error: ${err.message}"
+        throw err
+    } finally {
+        stage('Cleanup') {
             echo 'Cleaning up database containers...'
             sh 'docker rm -f shipping-db shipping-mongo order-db order-redis || true'
             echo 'Pipeline execution completed.'
-        }
-        failure {
-            echo 'Pipeline failed. Please check logs.'
-        }
-        success {
-            echo 'Pipeline succeeded.'
         }
     }
 }
