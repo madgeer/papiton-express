@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/MamangPermen/tracking-service/internal/model"
+import "github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
 
 // LogEventRepository menangani operasi penulisan log ke database NoSQL (Write-Heavy).
 type LogEventRepository interface {

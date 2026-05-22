@@ -1,4 +1,4 @@
-module github.com/MamangPermen/tracking-service
+module github.com/madgeer/papiton-express/tracking-and-logevent-service
 
 go 1.26.2
 

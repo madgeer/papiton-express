@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"github.com/MamangPermen/tracking-service/internal/service"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/service"
 )
 
 type TrackingAPIHandler struct {

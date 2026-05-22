@@ -2,8 +2,8 @@ package service
 
 import (
 	"testing"
-	"github.com/MamangPermen/tracking-service/internal/model"
-	"github.com/MamangPermen/tracking-service/internal/repository/mock"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/repository/mock"
 	"github.com/golang/mock/gomock"
 )
 

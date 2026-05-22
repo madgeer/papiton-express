@@ -7,7 +7,7 @@ package mock
 import (
 	reflect "reflect"
 
-	model "github.com/MamangPermen/tracking-service/internal/model"
+	model "github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
 	gomock "github.com/golang/mock/gomock"
 )
 

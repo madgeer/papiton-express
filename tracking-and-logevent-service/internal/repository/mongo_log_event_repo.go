@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/MamangPermen/tracking-service/internal/model"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

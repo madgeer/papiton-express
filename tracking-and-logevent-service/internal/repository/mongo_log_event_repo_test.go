@@ -3,7 +3,7 @@ package repository
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/MamangPermen/tracking-service/internal/model"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
 )
 
 func TestInsertLog_Mongo_Failed(t *testing.T) {

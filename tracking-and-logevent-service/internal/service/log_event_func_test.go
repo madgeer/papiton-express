@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/MamangPermen/tracking-service/internal/repository"
-	"github.com/MamangPermen/tracking-service/internal/model"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/repository"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
 )
 
 func TestProcessLog_DB_Failed(t *testing.T) {

@@ -2,8 +2,8 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/MamangPermen/tracking-service/internal/model"
-	"github.com/MamangPermen/tracking-service/internal/service"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/service"
 )
 
 type EventConsumerHandler struct {

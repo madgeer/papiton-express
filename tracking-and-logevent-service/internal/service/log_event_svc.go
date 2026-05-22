@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/MamangPermen/tracking-service/internal/model"
-	"github.com/MamangPermen/tracking-service/internal/repository"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/model"
+	"github.com/madgeer/papiton-express/tracking-and-logevent-service/internal/repository"
 )
 
 type LogEventService struct {
