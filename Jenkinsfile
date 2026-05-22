@@ -26,6 +26,15 @@ def getServices() {
             container: 'warehouse-container',
             imageName: 'warehouse-service',
             functionalTestPath: './test/functional/...'
+        ],
+        [
+            id: 'tracking',
+            path: 'tracking-service',
+            dockerfile: 'Dockerfile',
+            deployment: 'tracking-service',
+            container: 'tracking-service',
+            imageName: 'tracking-service',
+            functionalTestPath: './internal/service/...'
         ]
     ]
 }
