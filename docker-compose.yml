@@ -142,6 +142,32 @@ services:
     networks:
       - papiton-net
 
+  # --- TRACKING & LOG EVENT SERVICE ---
+  tracking-app:
+    build:
+      context: ./tracking-and-logevent-service
+      dockerfile: Dockerfile
+    container_name: tracking-app
+    ports:
+      - "8083:8080" # Diakses via port 8083 di localhost
+    environment:
+      - MONGO_URI=mongodb://tracking-mongo:27017
+      - DB_NAME=tracking_db
+    depends_on:
+      - tracking-mongo
+    networks:
+      - papiton-net
+
+  tracking-mongo:
+    image: mongo:6-jammy
+    container_name: tracking-mongo
+    ports:
+      - "27018:27017" # Diakses via port 27018 di localhost untuk menghindari konflik dengan shipping-mongo
+    volumes:
+      - tracking_mongodata:/data/db
+    networks:
+      - papiton-net
+
 networks:
   papiton-net:
     driver: bridge
@@ -150,3 +176,4 @@ volumes:
   warehouse_pgdata:
   shipping_pgdata:
   order_pgdata:
+  tracking_mongodata:
