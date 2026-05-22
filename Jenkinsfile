@@ -29,19 +29,28 @@ def getServices() {
         ],
         [
             id: 'tracking',
-            path: 'tracking-service',
+            path: 'tracking-service-and-logevent-service',
             dockerfile: 'Dockerfile',
             deployment: 'tracking-service',
             container: 'tracking-service',
             imageName: 'tracking-service',
             functionalTestPath: './internal/service/...'
+        ],
+        [
+            id: 'notification', 
+            path: 'notification-and-messaging-service',
+            dockerfile: 'Dockerfile',
+            deployment: 'notification-service',
+            container: 'notification-service',
+            imageName: 'notification-service',
+            functionalTestPath: './tests/functional/...'
         ]
     ]
 }
 
 node {
     def registry = "madgeer" // Ganti dengan URL registry Docker Anda
-    def gitBranch = 'fix/jenkins-pipeline' // Ganti dengan branch target Anda jika berbeda
+    def gitBranch = 'main' // Ganti dengan branch target Anda jika berbeda
     def gitUrl = 'https://github.com/madgeer/papiton-express.git'
 
     // Menyimpan status kegagalan untuk setiap tahapan verifikasi
