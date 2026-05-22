@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/archera/shipping-service-ver2/internal/domain"
+	"github.com/madgeer/papiton-express/shipping-service/internal/domain"
 )
 
 type DispatchHandler struct {

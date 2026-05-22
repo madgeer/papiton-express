@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	domain "github.com/archera/shipping-service-ver2/internal/domain"
+	domain "github.com/madgeer/papiton-express/shipping-service/internal/domain"
 	gomock "github.com/golang/mock/gomock"
 )
 

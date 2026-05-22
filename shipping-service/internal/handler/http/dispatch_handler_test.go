@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	handlerHttp "github.com/archera/shipping-service-ver2/internal/handler/http"
+	handlerHttp "github.com/madgeer/papiton-express/shipping-service/internal/handler/http"
 )
 
 // Mock sederhana (karena kita di Red Phase, kita bisa pakai mock manual atau gomock)

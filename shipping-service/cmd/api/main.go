@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	handlerHttp "github.com/archera/shipping-service-ver2/internal/handler/http"
+	handlerHttp "github.com/madgeer/papiton-express/shipping-service/internal/handler/http"
 )
 
 func main() {

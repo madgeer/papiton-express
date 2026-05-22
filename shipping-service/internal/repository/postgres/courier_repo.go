@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/archera/shipping-service-ver2/internal/domain"
+	"github.com/madgeer/papiton-express/shipping-service/internal/domain"
 )
 
 var ErrNotImplemented = errors.New("not implemented")

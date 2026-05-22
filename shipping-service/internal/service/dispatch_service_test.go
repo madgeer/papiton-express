@@ -4,23 +4,25 @@ import (
 	"context"
 	"testing"
 
-	"github.com/archera/shipping-service-ver2/internal/service"
+	"github.com/madgeer/papiton-express/shipping-service/internal/service"
 )
 
-func TestAutoDispatchPickUp_EmptyOrderID(t *testing.T) {
-	
+func TestAutoDispatchPickUp_ShouldReturnCourier(t *testing.T) {
+
 	dispatchSvc := service.NewDispatchService(nil, nil, nil)
 	ctx := context.Background()
 
-	// Act: Panggil fungsi dengan orderID kosong
-	_, err := dispatchSvc.AutoDispatchPickUp(ctx, "", "Bandung")
+	result, err := dispatchSvc.AutoDispatchPickUp(
+		ctx,
+		"ORD-001",
+		"Bandung",
+	)
 
-	if err == nil {
-		t.Fatalf("Ekspektasi error karena OrderID kosong, tapi malah sukses")
+	if err != nil {
+		t.Fatalf("tidak boleh error")
 	}
 
-	expectedErrMsg := "order ID tidak boleh kosong"
-	if err.Error() != expectedErrMsg {
-		t.Errorf("Ekspektasi error '%s', tapi dapat '%s'", expectedErrMsg, err.Error())
+	if result == nil {
+		t.Fatalf("dispatch tidak boleh nil")
 	}
 }

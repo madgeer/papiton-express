@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/archera/shipping-service-ver2/internal/domain"
-	repoMongo "github.com/archera/shipping-service-ver2/internal/repository/mongo"
+	"github.com/madgeer/papiton-express/shipping-service/internal/domain"
+	repoMongo "github.com/madgeer/papiton-express/shipping-service/internal/repository/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

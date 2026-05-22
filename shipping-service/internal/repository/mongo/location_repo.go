@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/archera/shipping-service-ver2/internal/domain"
+	"github.com/madgeer/papiton-express/shipping-service/internal/domain"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

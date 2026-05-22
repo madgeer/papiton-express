@@ -1,4 +1,4 @@
-module github.com/archera/shipping-service-ver2
+module github.com/madgeer/papiton-express/shipping-service
 
 go 1.25
 

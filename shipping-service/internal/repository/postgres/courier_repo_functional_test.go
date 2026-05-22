@@ -9,8 +9,8 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/archera/shipping-service-ver2/internal/repository/postgres"
 	_ "github.com/lib/pq"
+	"github.com/madgeer/papiton-express/shipping-service/internal/repository/postgres"
 )
 
 func TestCourierRepository_GetAvailableByZone_Functional(t *testing.T) {
