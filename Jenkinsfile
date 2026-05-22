@@ -29,7 +29,7 @@ def getServices() {
         ],
         [
             id: 'tracking',
-            path: 'tracking-service-and-logevent-service',
+            path: 'tracking-and-logevent-service',
             dockerfile: 'Dockerfile',
             deployment: 'tracking-service',
             container: 'tracking-service',
